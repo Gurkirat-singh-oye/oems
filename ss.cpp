@@ -56,6 +56,8 @@ int main()
 
     CURL *curl;
     CURLcode result;
+
+    std::string oems_cmd;
     // std::future<CURLcode> resultFuture;
 
     // apiClass api;
@@ -110,15 +112,27 @@ int main()
 
     idkwtni.wait();
     // establish a connection and then you authenticate that connection that is you dont have to send access token with every request you make
-    api.makeReq(api.auth);
-    auto jsonObj = api.makeReq(api.buy);
+    // api.makeReq(api.auth);
+    // auto jsonObj = api.makeReq(api.buy);
 
     // std::cout << std::endl << jsonObj << std::endl;
 
 
     // this gives me symbols and full names
-    auto jsonObjArr = jsonObj.as_object();
-    auto tmpArr = jsonObjArr["result"];
+    // auto jsonObjArr = jsonObj.as_object();
+    // auto tmpArr = jsonObjArr["result"];
+
+    utils ut;
+    while (true)
+    {
+        system("clear");
+        std::cout << "\n'.help' if you feel stuck.\n";
+        std::cout << "\noems: ";
+
+        getline(std::cin, oems_cmd);
+        ut.handle_oems_cmd(oems_cmd);
+        
+    }
 
     // std::cout << json::serialize((tmpArr.as_object())["access_token"]) << std::endl;
 

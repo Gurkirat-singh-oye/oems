@@ -85,6 +85,11 @@ public:
     void getSupportedIndexNames();
 };
 
+class utils {
+    public:
+        void handle_oems_cmd(std::string cmd);
+};
+
 // class apiClass
 // {
 // public:

@@ -78,6 +78,8 @@ void wssLaunch::wss_connect (apiClass *wso)
     (*wso).ws_.handshake(host, "/ws/api/v2");
 
     std::cout << "socket connected." << std::endl;
+    
+    std::cout << "socket connected." << std::endl;
 
 }
 
@@ -89,4 +91,15 @@ void orderClass::placeOrder ()
 {
     // apiClass api;
     // api.httpCall("https://test.deribit.com/api/v2/public/status?");
+}
+
+void utils::handle_oems_cmd (std::string cmd) {
+
+    if (!cmd.compare(".q")) {
+        std::cout << "goodbye!\n";
+        exit(0);
+    } else {
+        std::cout << cmd << std::endl;
+    }
+
 }
