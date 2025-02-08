@@ -122,7 +122,7 @@ int main()
     // auto jsonObjArr = jsonObj.as_object();
     // auto tmpArr = jsonObjArr["result"];
 
-    utils ut;
+    utils ut(&api);
     while (true)
     {
         system("clear");
@@ -131,7 +131,7 @@ int main()
 
         getline(std::cin, oems_cmd);
         ut.handle_oems_cmd(oems_cmd);
-        
+        std::getchar();
     }
 
     // std::cout << json::serialize((tmpArr.as_object())["access_token"]) << std::endl;

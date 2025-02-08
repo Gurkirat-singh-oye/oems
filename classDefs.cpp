@@ -1,6 +1,8 @@
 #include <curl/curl.h>
 #include <string>
 #include <iostream>
+#include <boost/unordered_map.hpp>
+#include <functional>
 
 #include "classDefs.hpp"
 
@@ -94,12 +96,7 @@ void orderClass::placeOrder ()
 }
 
 void utils::handle_oems_cmd (std::string cmd) {
-
-    if (!cmd.compare(".q")) {
-        std::cout << "goodbye!\n";
-        exit(0);
-    } else {
-        std::cout << cmd << std::endl;
-    }
+    
+    this->cmd_map[cmd]();
 
 }

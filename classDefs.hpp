@@ -8,6 +8,7 @@
 #include <boost/beast/ssl.hpp>
 #include <boost/asio/ssl.hpp>
 #include <boost/json.hpp>
+#include <boost/unordered_map.hpp>
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -31,26 +32,14 @@ public:
     };
     std::unordered_map<apiCallKeys, json::value> apiList = {
         {get_currencies, json::object{
-            {"method", "public/get_currencies"},
-            {"params", json::object{{},{}}}
-        }},
-        {auth, json::object{
-            {"method", "public/auth"},
-            {"params", json::object{
-                {"grant_type", "client_credentials"},
-                {"client_id", "INR1NzDj"},
-                {"scope", "session:apiconsole-l4796p4dcjm expires:2592000"},
-                {"client_secret", "TxbYH8R_NYlPUfShfDKLjjCMVl1ZISBzsCu72EkG9fE"}
-            }}
-        }},
-        {buy, json::object{
-            {"method", "private/buy"},
-            {"params", json::object{
-                {"instrument_name", "ETH-PERPETUAL"},
-                {"amount", 4},
-                {"price", 3356},
-            }}
-        }}};
+                             {"method", "public/get_currencies"},
+                             {"params", json::object{{}, {}}}}},
+        {auth, json::object{{"method", "public/auth"}, {"params", json::object{{"grant_type", "client_credentials"}, {"client_id", "INR1NzDj"}, {"scope", "session:apiconsole-l4796p4dcjm expires:2592000"}, {"client_secret", "TxbYH8R_NYlPUfShfDKLjjCMVl1ZISBzsCu72EkG9fE"}}}}},
+        {buy, json::object{{"method", "private/buy"}, {"params", json::object{
+                                                                     {"instrument_name", "ETH-PERPETUAL"},
+                                                                     {"amount", 4},
+                                                                     {"price", 3356},
+                                                                 }}}}};
 
     apiClass(net::io_context &ioc, ssl::context &ctx) : ws_(ioc, ctx), ctx_(ctx) {};
 
@@ -85,9 +74,33 @@ public:
     void getSupportedIndexNames();
 };
 
-class utils {
-    public:
-        void handle_oems_cmd(std::string cmd);
+class utils
+{
+public:
+
+    utils(apiClass *api) {api_ctx_ = api;};
+
+    boost::unordered_map<std::string, std::function<void()>> cmd_map =
+        {{
+            ".q", [](){
+            std::cout << "goodbye!\n";
+            exit(0);
+            }
+          },
+          {
+            ".getcurs", [this](){
+            auto jsonObj = (*api_ctx_).makeReq((*api_ctx_).get_currencies);
+            std::cout << std::endl << jsonObj << std::endl;
+            }
+          },
+          {
+            ".help", [](){
+            std::cout << ".q\t\t:to exit\n.getcurs\t:to get currencies\n";
+            }
+          }};
+
+    void handle_oems_cmd(std::string cmd);
+    apiClass *api_ctx_;
 };
 
 // class apiClass
