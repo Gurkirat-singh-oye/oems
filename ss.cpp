@@ -3,6 +3,8 @@
 #include <future>
 #include <curl/curl.h>
 #include <string>
+#include <iterator>
+#include <regex>
 
 #include "classDefs.hpp"
 
@@ -130,7 +132,14 @@ int main()
         std::cout << "\noems: ";
 
         getline(std::cin, oems_cmd);
-        ut.handle_oems_cmd(oems_cmd);
+        std::regex re("\\s+");  // split on one or more whitespace chars
+    
+        std::sregex_token_iterator it(oems_cmd.begin(), oems_cmd.end(), re, -1);
+        std::sregex_token_iterator end;
+    
+        std::vector<std::string> cmdNargs(it, end);
+        ut.handle_oems_cmd(cmdNargs);
+        std::cout << "press ENTER to refresh console.";
         std::getchar();
     }
 

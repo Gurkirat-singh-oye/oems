@@ -8,7 +8,7 @@
 
 CURL *apiClass::curl = curl_easy_init();
 
-CURLcode apiClass::httpCall (std::string url)
+CURLcode apiClass::httpCall(std::string url)
 {
 
     struct curl_slist *headers = NULL;
@@ -22,20 +22,24 @@ CURLcode apiClass::httpCall (std::string url)
     return res;
 }
 
-json::value apiClass::wssRead ()
+json::value apiClass::wssRead(bool isSub)
 {
 
     ws_.read(buffer);
-    std::cout << "\nReceived message: " << beast::make_printable(buffer.data()) << std::endl;
+    // std::cout << "\nReceived message: " << beast::make_printable(buffer.data()) << std::endl;
 
     std::string data = beast::buffers_to_string(buffer.data());
     json::value resJson = json::parse(data);
-    // std::cout << std::endl << resJson.as_object()["result"] << std::endl;
+    isSub ? std::cout << std::endl
+                      << "sub: " << resJson.as_object()["params"].as_object()["data"].as_object()["instrument_name"] << "\t" << resJson.as_object()["params"].as_object()["data"].as_object()["mark_price"] << std::endl
+          : std::cout << std::endl
+                      << "asObj: " << resJson.as_object()["result"] << std::endl;
 
+    buffer.consume(buffer.size());
     return resJson;
 }
 
-json::value apiClass::wssWrite (apiCallKeys ack, std::string method, std::string params)
+json::value apiClass::wssWrite(apiCallKeys ack, std::string method, std::string params)
 {
 
     // auto method = apiList.at(ack);
@@ -48,7 +52,8 @@ json::value apiClass::wssWrite (apiCallKeys ack, std::string method, std::string
     return resJson;
 }
 
-json::value apiClass::makeReq (apiCallKeys ack) {
+json::value apiClass::makeReq(apiCallKeys ack)
+{
 
     // TODO: if its a private method, add access_token
 
@@ -57,11 +62,10 @@ json::value apiClass::makeReq (apiCallKeys ack) {
     std::string params = json::serialize(reqObj.as_object()["params"]);
 
     return wssWrite(ack, method, params);
-
 }
 
 // Forms a Websocket connection (last mile for initializing Websocket connection)
-void wssLaunch::wss_connect (apiClass *wso)
+void wssLaunch::wss_connect(apiClass *wso)
 {
 
     // These will hold the resolved IP and port
@@ -80,23 +84,22 @@ void wssLaunch::wss_connect (apiClass *wso)
     (*wso).ws_.handshake(host, "/ws/api/v2");
 
     std::cout << "socket connected." << std::endl;
-    
-    std::cout << "socket connected." << std::endl;
 
+    std::cout << "socket connected." << std::endl;
 }
 
-void orderClass::getSupportedIndexNames ()
+void orderClass::getSupportedIndexNames()
 {
 }
 
-void orderClass::placeOrder ()
+void orderClass::placeOrder()
 {
     // apiClass api;
     // api.httpCall("https://test.deribit.com/api/v2/public/status?");
 }
 
-void utils::handle_oems_cmd (std::string cmd) {
-    
-    this->cmd_map[cmd]();
-
+void utils::handle_oems_cmd(std::vector<std::string> cmd)
+{
+    this->args = std::vector<std::string>(cmd.begin()+1, cmd.end());
+    this->cmd_map[cmd[0]]();
 }
